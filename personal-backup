@@ -1,0 +1,254 @@
+#!/bin/bash
+
+# Author: gael lambert <g.lambert@netwiki.fr>
+
+source /etc/personal-backup/personal-backup.conf
+
+usage()
+{
+    echo "Usage: $0: [OPTIONS]"
+    echo "  -b                  : Start backup"
+    echo "  -d                  : List external devices"
+    echo "  -m                  : Mount the external devices"
+    echo "  -u                  : Umount the external devices"
+    echo "  -v                  : Verbose mode"
+    echo "  -h                  : Show help"
+    echo ""
+    echo "Examples:"
+    echo "  - Check pattern 'foo is bad' in file /var/log/bar.log:"
+    echo "     $0 -l /var/log/bar.log -r 'foo is bad' -t mytest"
+    echo "  - List all checks and status:"
+    echo "     $0 -L"
+    echo "  - Clear warning on specific check:"
+    echo "     $0 -c mytest"
+    echo "  - Clear _all_ warnings:"
+    echo "     $0 -c all"
+    exit 1
+}
+
+
+#
+# Fonction de log
+#
+
+do_log()
+{
+	echo "$@"
+	echo $(date +'[ %d/%m/%Y - %H:%M:%S ] #')" $@">>"$LOGFILE"
+}
+
+device_exist(){
+    # UUID
+    if [ -n "$1" ] && [ -n "$(blkid -U $1)" ];then
+        echo "found"
+    fi
+}
+
+
+do_umount_external(){
+    # Check conf and mounted device if external backup
+    if [ -n "$ExternalBackupUUID" ] && [ -n "$ExternalMountPoint" ];then
+        # Need root for mount
+        if [ "$(id -u)" != "0" ];then
+            do_log "Erreur must launch with root or sudo for mount"
+            exit 1
+        fi
+        # Check mountpoint
+        if ! [ -d "$ExternalMountPoint" ]; then
+            do_log "Erreur mount point not found $ExternalMountPoint'"
+            exit 1
+        fi
+
+        if [ "$(device_exist $ExternalBackupUUID)" != "found" ]; then
+            do_log "Erreur device UUID : $ExternalBackupUUID not found"
+            exit 1
+        fi
+
+        device=$(blkid -U $ExternalBackupUUID)
+
+        # Unmount external device
+        do_log "- Umount device : '$device'"
+        sync ; sync ; sync
+        umount -v $device
+    fi
+}
+
+do_mount_external(){
+
+    # Check conf and mounted device if external backup
+    if [ -n "$ExternalBackupUUID" ] && [ -n "$ExternalMountPoint" ];then
+        # Need root for mount
+        if [ "$(id -u)" != "0" ];then
+            do_log "Erreur must launch with root or sudo for mount"
+            exit 1
+        fi
+        # Check mountpoint
+        if ! [ -d "$(dirname $ExternalMountPoint)" ]; then
+            do_log "Erreur can't create '$(basename $ExternalMountPoint)' in '$(dirname $ExternalMountPoint)'"
+            exit 1
+        fi
+        mkdir -p $ExternalMountPoint
+
+        if [ "$(device_exist $ExternalBackupUUID)" != "found" ]; then
+            do_log "Erreur device UUID : $ExternalBackupUUID not found"
+            exit 1
+        fi
+
+        device=$(blkid -U $ExternalBackupUUID)
+
+        # Device mounted ?
+        currentMntPoint="$(find_mountpoint $ExternalBackupUUID $device)"
+        if [ "$currentMntPoint" != "$ExternalMountPoint" ]; then
+            # Try to mount device
+            mount -t auto $device $ExternalMountPoint
+            # Now device is mounted ?
+            currentMntPoint="$(find_mountpoint $ExternalBackupUUID $device)"
+            if [ "$currentMntPoint" != "$ExternalMountPoint" ]; then
+                do_log "Erreur Unable to mount device '$device' on '$ExternalMountPoint'"
+                exit 1
+            fi
+        fi
+        do_log "Device mounted '$device' -> '$ExternalMountPoint'"
+    fi
+
+}
+
+#
+#  Fonction backup
+#
+do_backup()
+{
+    do_log "--- Start"
+    if [ "$enable" = "0" ]; then
+    	do_log "Erreur : enable must be 1"
+    	exit 1;
+    fi
+    
+    # If no backup dir stop
+    if [ -z "$BDirs" ] || ! [ -d "$(dirname $BDirs)" ]; then
+        do_log "Erreur : No BDirs or $BDirs not exist"
+        exit 1;
+    fi
+
+    # Check if sshpass is installed
+    if [ "$SSH_password" != "" ] && [ -z "$(wich sshpass)" ]; then 
+        do_log "Erreur : sshpass is required"
+        exit 1;
+    fi
+
+    # Mount if external device
+    do_mount_external
+    
+    #
+    # Backup
+    #
+    
+    if [ "$SSH_addr" != "" ]; then # Utiliser SSH
+        if [ "$SSH_password" != "" ]; then # Utiliser sshpass
+            do_log "- Use sshpass"
+            eval rsync -HEXAau$verbose  --numeric-ids --compress --delete-before $RSYNC_args -e "'sshpass -p $SSH_password ssh -o StrictHostKeyChecking=no -l $SSH_user'" $Target $SSH_addr:$BDirs >> "$LOGFILE" 2>&1
+            if [ "$POST_COMMAND" != "" ]; then
+        	    sshpass -p $SSH_password ssh -o StrictHostKeyChecking=no $SSH_user@$SSH_addr "$POST_COMMAND"
+            fi
+        else # Utiliser une clé ssh
+            do_log "- Use ssh key"
+            eval rsync -HEXAau$verbose  --numeric-ids --compress --delete-before $RSYNC_args -e "'ssh -o StrictHostKeyChecking=no -l $SSH_user'" $Target $SSH_addr:$BDirs >> "$LOGFILE" 2>&1
+            if [ "$POST_COMMAND" != "" ]; then
+        	    ssh -o StrictHostKeyChecking=no $SSH_user@$SSH_addr "$POST_COMMAND"
+            fi
+        fi
+    else # Ne pas utiliser ssh (locale)
+        do_log "- Use local backup"
+        eval rsync -HEXAau$verbose  --numeric-ids --compress --delete-before $RSYNC_args $Target $BDirs >> "$LOGFILE" 2>&1
+        if [ "$POST_COMMAND" != "" ]; then
+            $POST_COMMAND
+        fi
+    fi
+
+    # Unmount external device
+    if [ "$ExternalKeepMounted" != "yes" ];then
+        do_umount_external
+    fi
+    
+    do_log "--- End"
+}
+
+
+find_mountpoint(){
+    # UUID DEVICE
+    if [ -z "$1" ] || [ -z "$2" ];then
+        return ""
+    fi
+
+    UUID=$1
+    device=$2
+    # search with UUID
+    mountpoint=`df -h | grep $device |awk 'BEGIN {FS=" "}{print $NF ; exit}'`
+    if [ -z "$mountpoint" ];then
+        # search with device
+        mountpoint=`df -h | grep $device |awk 'BEGIN {FS=" "}{print $NF ; exit}'`
+    fi
+    echo $mountpoint
+}
+
+#  Liste devices 
+do_list_devices(){
+    echo 'List of all devices :'
+    IFS=$'\n'
+    BLKID=$(which blkid)
+    for line in $($BLKID); do
+        DEVICE=$(echo $line | awk '{sub(/:$/,"",$1); print $1}')
+        #UUID=$(echo $line | awk '{sub(/.+\(UUID.*\).*/,"\0",$0); print $0}')
+        UUID=$(echo $line | sed -r  's/^.+(UUID="([^ ]+)").*$/\2/')
+        mntpoint=`find_mountpoint "$UUID" "$DEVICE"`
+        echo "    * UUID = '$UUID' -> Device = '$DEVICE' -> mountpoint = '$mntpoint'"
+    done
+    unset IFS
+}
+
+
+if [ -z "$1" ];then
+    usage
+fi
+
+while getopts 'bdhmuv' OPTION
+do
+    case ${OPTION} in
+    b)
+        DO_BACKUP=1
+        ;;
+    d)
+        LIST_DEVICES=1
+        ;;
+    v)
+        verbose="v"
+        ;;
+    m)
+        MOUNT_EXTERNAL=1
+        ;;
+    u)
+        UMOUNT_EXTERNAL=1
+        ;;
+    h)
+        usage
+        ;;
+    ?)
+        usage
+        ;;
+    esac
+done
+
+if [ $DO_BACKUP ]; then
+    do_backup
+fi
+if [ $LIST_DEVICES ]; then
+    do_list_devices
+fi
+
+if [ $MOUNT_EXTERNAL ]; then
+    do_mount_external
+fi
+
+if [ $UMOUNT_EXTERNAL ]; then
+    do_umount_external
+fi

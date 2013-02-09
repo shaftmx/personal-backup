@@ -1,0 +1,52 @@
+#!/bin/sh
+# postinst script for enovance-config-apps
+
+set -e
+
+## DEBHELPER #
+#
+#INTRO="## CUSTOMBOX-CONFIG: START"
+#OUTRO="## CUSTOMBOX-CONFIG: END"
+#WARNING="## PLEASE DO NOT MODIFY/DELETE THESE LINES"
+#
+#
+#do_purge(){
+#	FILE=$1
+#	CMT_PRFX=$2
+#    # remove lines from previous installation
+#    if [ -n "`grep \"${CMT_PRFX}${INTRO}\" ${FILE}`" ]; then
+#        sed -i "/${CMT_PRFX}${INTRO}/,/${CMT_PRFX}${OUTRO}/d" ${FILE}
+#        sed -i "/${CMT_PRFX}${OUTRO}/d" ${FILE}
+#    fi
+#}
+#
+#
+#case "$1" in
+#    remove|purge|disappear)
+#
+#		# vim
+#		do_purge /etc/vim/vimrc '"'
+#		# screen
+#		do_purge /etc/screenrc '#'
+#		# bash
+#		for HOME_U in `ls -d /home/* 2>/dev/null || true ; echo /root`; do
+#			do_purge $HOME_U/.bashrc '#'
+#		done
+#		# ssh_config
+#		for HOME_U in `ls -d /home/* 2>/dev/null || true ; echo /root`; do
+#			do_purge $HOME_U/.ssh/config '#'
+#		done
+#
+#    ;;
+#
+#    upgrade|failed-upgrade|abort-upgrade|abort-install)
+#        # do nothing
+#    ;;
+#
+#    *)
+#        echo "postrm called with unknown argument \`$1'" >&2
+#        exit 1
+#    ;;
+#esac
+#
+exit 0

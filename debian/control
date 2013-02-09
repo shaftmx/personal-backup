@@ -1,0 +1,21 @@
+Source: personal-backup
+Section: admin
+Priority: optional
+Maintainer: Gael Lambert <gael.lambert@netwiki.fr>
+Build-Depends: debhelper (>= 7.0.50~)
+Homepage: http://svn.netwiki.fr/svn/scripts
+#Vcs-Git: git://git.debian.org/collab-maint/custombox.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/custombox.git;a=summary
+
+Package: personal-backup
+Architecture: all
+Depends: ${misc:Depends}, rsync, util-linux
+Description: Personal-backup provide a rsync backup script for your laptop
+ Personal-backup provide a rsync backup script for your laptop.
+ The differents features :
+ * Select usb storage or remote server for your backup.
+ * Use ssh with key or send password (with sshpass)
+ * Select multiple directory to backup
+ * Specify the backup repository (remote or not)
+ * Add rsync filters
+ * Launch post backup command

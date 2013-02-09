@@ -1,0 +1,17 @@
+personal-backup (0.1-3) unstable; urgency=low
+
+  * Fixe stderr in log file
+
+ -- gael <gael@netwiki.fr>  Sat, 09 Feb 2013 18:12:15 +0100
+
+personal-backup (0.1-2) unstable; urgency=low
+
+  * Add check on BDir
+
+ -- gael <gael@w00t.home>  Fri, 07 Dec 2012 19:26:29 +0100
+
+personal-backup (0.1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- gael <gael.lambert@netwiki.fr>  Mon, 26 Dec 2011 00:38:56 +0100
