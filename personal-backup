@@ -15,14 +15,8 @@ usage()
     echo "  -h                  : Show help"
     echo ""
     echo "Examples:"
-    echo "  - Check pattern 'foo is bad' in file /var/log/bar.log:"
-    echo "     $0 -l /var/log/bar.log -r 'foo is bad' -t mytest"
-    echo "  - List all checks and status:"
-    echo "     $0 -L"
-    echo "  - Clear warning on specific check:"
-    echo "     $0 -c mytest"
-    echo "  - Clear _all_ warnings:"
-    echo "     $0 -c all"
+    echo "  - Launch a backup :"
+    echo "     $0 -b"
     exit 1
 }
 
