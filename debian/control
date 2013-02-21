@@ -3,9 +3,9 @@ Section: admin
 Priority: optional
 Maintainer: Gael Lambert <gael.lambert@netwiki.fr>
 Build-Depends: debhelper (>= 7.0.50~)
-Homepage: http://svn.netwiki.fr/svn/scripts
-#Vcs-Git: git://git.debian.org/collab-maint/custombox.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/custombox.git;a=summary
+Homepage: https://github.com/shaftmx/personal-backup
+#Vcs-Git: https://github.com/shaftmx/personal-backup
+#Vcs-Browser: https://github.com/shaftmx/personal-backup
 
 Package: personal-backup
 Architecture: all

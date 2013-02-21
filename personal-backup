@@ -2,7 +2,7 @@
 
 # Author: gael lambert <g.lambert@netwiki.fr>
 
-source /etc/personal-backup/personal-backup.conf
+source /etc/personal-backup.conf
 
 usage()
 {
