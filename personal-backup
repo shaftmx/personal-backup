@@ -15,8 +15,10 @@ usage()
     echo "  -h                  : Show help"
     echo ""
     echo "Examples:"
-    echo "  - Launch a backup :"
+    echo "  - Start a backup::"
     echo "     $0 -b"
+    echo "  - List external devices:"
+    echo "     $0 -d"
     exit 1
 }
 
