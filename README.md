@@ -31,7 +31,7 @@ Installation
 
 ### Manual
 
-You just need to copy personal-backup script into a directory in your PATH.
+You just need to copy personal-backup script into a directory in your **$PATH**.
 
 The next thing is to put the config file personal-backup.conf in **/etc**.
 
@@ -47,20 +47,19 @@ Configuration
 -------------
 TODO - Finish this doc
 
-    #
-    # Configuration
-    #
+After the installation you need to configure personal-backup.
     
-    # Enable script (default security) need to be 1
+Enable personal-backup (default security) need to be 1
     enable="0"
-    
-    # Emplacement des logs
+
+Directories you want backup
+    Target="/dir1 /dir2"
+
+
+You can also customize things like : 
+
+Change the logfile path
     LOGFILE="/tmp/personal-backup.log"
-    #LOGFILE="/var/log/personal-backup.log"
-    
-    # Repertoires à backuper
-    #  Ex : Target="./important"
-    Target="./important ./important2"
     
     # User ssh pour le serveur de backup
     # SSH_user="root"
