@@ -9,11 +9,12 @@ export DH_ALWAYS_EXCLUDE=COPYING:CHANGES
 
 DESTDIR=$(CURDIR)/debian/personal-backup
 BINDIR=usr/bin
-CONFDIR=etc
+#CONFDIR=etc
 
 override_dh_auto_install:
-	# Conf file
-	install    -m 0755 -o root -g root personal-backup.conf $(DESTDIR)/$(CONFDIR)
+#	# Conf file
+#	install -d -m 0755 -o root -g root $(DESTDIR)/$(CONFDIR)
+#	install    -m 0755 -o root -g root personal-backup.conf $(DESTDIR)/$(CONFDIR)
 	# Bin
 	install -d -m 0755 -o root -g root $(DESTDIR)/$(BINDIR)
 	install    -m 0755 -o root -g root personal-backup $(DESTDIR)/$(BINDIR)

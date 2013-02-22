@@ -1,3 +1,9 @@
+personal-backup (0.1-5) unstable; urgency=low
+
+  * Fixe packaging bug
+
+ -- Gael Lambert <gael@enovance.com>  Fri, 22 Feb 2013 11:17:15 +0100
+
 personal-backup (0.1-4) unstable; urgency=low
 
   * Change the conf file path
