@@ -70,8 +70,9 @@ If you want a backup on a external device you can specify the UUID and the mount
 
     ExternalBackupUUID="94ea7e38-5d29-4824-bb0f-e20b7856d90d"
     ExternalMountPoint="/media/backup"
-    
-**You can also customize things like : **
+
+**You can also customize things like :**
+
 
 Change the logfile path
 
