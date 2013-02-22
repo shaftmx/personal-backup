@@ -50,43 +50,46 @@ TODO - Finish this doc
 After the installation you need to configure personal-backup.
     
 Enable personal-backup (default security) need to be 1
+
     enable="0"
 
 Directories you want backup
+
     Target="/dir1 /dir2"
 
+Chose the backup directory where you want to push your data. Used for all backups (external, ssh, local).
 
-You can also customize things like : 
+    BDirs="/tmp/back/"
+
+Configure user and host for ssh backup
+
+    SSH_user="root"
+    SSH_addr="127.0.0.1"
+
+If you want a backup on a external device you can specify the UUID and the mountpoint. The uuid is given by **personal-backup -d**
+
+    ExternalBackupUUID="94ea7e38-5d29-4824-bb0f-e20b7856d90d"
+    ExternalMountPoint="/media/backup"
+    
+**You can also customize things like : **
 
 Change the logfile path
-    LOGFILE="/tmp/personal-backup.log"
-    
-    # User ssh pour le serveur de backup
-    # SSH_user="root"
-    # SSH_addr="127.0.0.1"
-    
-    # SSH password need : apt-get install sshpass N'utilise pas si pas déclaré
-    #SSH_password="mypassword"
-    
-    # UUID du disque de backup
-    #ExternalBackupUUID="" TODO check que l'uid est dans la liste blkid
-    #ExternalMountPoint=""  # Ckeck que le device de l'uuid est bien monté dans mointpoint
-    #ExternalKeepMounted="yes"
-    
-    # Serveur backup address and directory (destination du backup
-    BDirs="/tmp/back/" 
-    
-    # post-command commande aprés rsync (serveur ou locale)  N'utilise pas si pas déclaré
-    #POST_COMMAND="chown -R 1000:1000 $BDirs"
-    # Ou par exemple avec des notification  apt-get install libnotify-bin
-    #POST_COMMAND="sudo -u gael notify-send -t 999999999 'backup end'"
-    
-    # Rsync extended args permet d'ajouter des arguments, par exemple des filtres voir exemple
-    RSYNC_args=""
-    
-    # Mode verbose
-    #verbose=""    # o
 
-Exemple of rsync args with filter :
+    LOGFILE="/tmp/personal-backup.log"
+
+Specify a password for ssh
+
+    SSH_password="mypassword"
+
+When you use a external backup you can umount or keep mounted the external device
+
+    ExternalKeepMounted="yes"
+
+Launch a post backup command on remote ssh server or local for local backups.
+
+    POST_COMMAND="sudo -u gael notify-send -t 60 'backup end'"
+
+Add custom args in rsync like exclude or filter for exemple
+
     RSYNC_args="--filter '- /video/films' --filter '- /video/series'"
 
