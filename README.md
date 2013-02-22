@@ -36,7 +36,7 @@ You just need to copy personal-backup script into a directory in your **$PATH**.
 The next thing is to put the config file personal-backup.conf in **/etc**.
 
 * You need **rsync** indeed.
-* If you want use ssh with password you need sshpass.
+* If you want use ssh with password you need **sshpass**.
 * If you want use an external device you need **util-linux** for blkid command
 
 ### Package
