@@ -45,7 +45,6 @@ The package has not yet repo but you can build with tools like pbuilder
 
 Configuration
 -------------
-TODO - Finish this doc
 
 After the installation you need to configure personal-backup.
     
