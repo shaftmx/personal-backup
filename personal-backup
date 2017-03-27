@@ -192,7 +192,7 @@ find_mountpoint(){
     UUID=$1
     device=$2
     # search with UUID
-    mountpoint=`df -h | grep $device |awk 'BEGIN {FS=" "}{print $NF ; exit}'`
+    mountpoint=`df -h | grep $UUID |awk 'BEGIN {FS=" "}{print $NF ; exit}'`
     if [ -z "$mountpoint" ];then
         # search with device
         mountpoint=`df -h | grep $device |awk 'BEGIN {FS=" "}{print $NF ; exit}'`
